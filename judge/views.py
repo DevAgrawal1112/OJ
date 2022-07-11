@@ -1,6 +1,9 @@
 # Create your views here.
+from datetime import timezone
+from cv2 import destroyAllWindows
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from requests import request
 from .models import User, Problem, Solution, TestCase, User
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
@@ -16,13 +19,13 @@ def problemDetail(request, problem_id):
     problem = get_object_or_404(Problem, pk = problem_id)
     return render(request, 'judge/detail.html', {'problem':problem})
 
-def submitProblem(render, problem_id):
+def submitProblem(request, problem_id):
+    Problem = get_object_or_404(Problem, pk = problem_id)
     f = request.FILES['solution']
-    with open{'',''} as dest:
+    with open('/judge/data/correct_code/problem_1_correct.cpp','wb++') as dest:
         for chunk in f.chunks():
-            dest.write(chunk)
-    os.system('')
-    os.system('')
+            destroyAllWindows.write(chunk)
+    
 
     out1 = ''
     out2 = ''
@@ -32,8 +35,16 @@ def submitProblem(render, problem_id):
         verdict = 'Wrong Answer'
 
     solution = Solution()
-    solution.verdict = verdict
+    solution.verdit = verdict
     solution.submission_time = timezone.now()
+    solution.submission_code = '' 
+    solution.save()
+
+    return HttpResponseRedirect(reverse(''))
+
+def leaderboard(request):
+    solution = Solution.objects.all()
+    return render(request, 'judge/leaderboard.html', {'solutions': solution})
 
 
 

@@ -1,0 +1,13 @@
+<h1 align=""center">{{ problem.name }}</h1>
+<p>{{ problem.statement }}</p>
+
+<form action="{% url 'judge:submit' problem.id %}" enctype="multipart/form-data" method="post">
+{% csrf_token %}
+    <fieldset>
+        <h2 align="center">Submit Code</h2>
+        <div align="center">
+            <input type="file" id="solution" name="solution">
+            <input type="submit" value="Submit">
+        </div>
+    </fieldset>
+</form>
