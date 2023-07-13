@@ -1,31 +1,31 @@
 from django.db import models
-
-class User(models.Model):
-    email = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
+import os
+# Create your models here.
 
 class Problem(models.Model):
-    problem_code = models.CharField(max_length=100)
-    name = models.CharField(max_length=200)
-    statement = models.TextField()
-    difficulty = models.CharField(max_length = 100)
-
+    title=models.CharField(max_length=100)
+    statement=models.TextField()
+    difficulty_level=models.CharField(max_length=20)
+    code=models.TextField(blank=True)
     def __str__(self):
-        return self.problem_code
+        return self.title
 
 class Solution(models.Model):
-    problem = models.ForeignKey(Problem,on_delete=models.CASCADE)
-    verdit = models.CharField(max_length=100)
-    submission_time = models.DateTimeField()
-    submission_code = models.DateTimeField('submitted at')
-
-    def __str__(self):
-        return self.verdict
+    problem=models.ForeignKey(Problem,on_delete=models.CASCADE)
+    verdict=models.CharField(max_length=100)
+    def get_upload_path_inp(instance, filename):
+        return os.path.join("" ,filename)
+    submitted_code=models.FileField(upload_to=get_upload_path_inp)
+    time_of_submission=models.DateTimeField('submitted at')
+    
 
 class TestCase(models.Model):
-    input = models.TextField()
-    output = models.TextField()
-    problem = models.ForeignKey(Problem,on_delete=models.CASCADE)
+    problem=models.ForeignKey(Problem,on_delete=models.CASCADE)
+    def get_upload_path_inp(instance, filename):
+        return os.path.join("uploads/input/problem_%d" % instance.problem.id,filename)
 
-    def __str__(self):
-        return self.input
+    def get_upload_path_out(instance, filename):
+        return os.path.join("uploads/output/problem_%d" % instance.problem.id,filename)
+    
+    input=models.FileField(upload_to=get_upload_path_inp)
+    output=models.FileField(upload_to=get_upload_path_out)
