@@ -1,9 +1,0 @@
-{% if problem_list %}
-    <ol>
-        {% for problem in problem_list %}
-            <li> <a heref="{% url 'judge:problem_detail' problem.id %}">{{ problem.name }}</a> </li>
-        {% endfor %}
-    </ol>
-{% else %}
-    <p>No problems are available.</p>
-{% endif %}

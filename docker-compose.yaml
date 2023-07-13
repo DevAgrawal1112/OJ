@@ -1,0 +1,8 @@
+services:
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    image: node-app-img:latest
