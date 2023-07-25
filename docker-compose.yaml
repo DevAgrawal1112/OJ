@@ -1,8 +1,14 @@
+version: '3'
+
 services:
-  server:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+  frontend:
+    image: agrawaldev1112/online_judge:frontend_1.0.0
     ports:
-      - "5000:5000"
-    image: node-app-img:latest
+      - 3000:3000
+    depends_on:
+      - backend
+
+  backend:
+    image: agrawaldev1112/online_judge:backend_1.0.0
+    ports:
+      - 5000:5000

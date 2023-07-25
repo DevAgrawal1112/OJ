@@ -1,89 +1,40 @@
-import { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css';
+import NavBar from "./components/NavBar";
+import Home from "./components/Home";
+import Problems from "./components/Problems";
+import ProblemsPage from "./components/ProblemPage";
+import Submissions from "./components/Submissions";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
-function App() {
-  const [code, setCode] = useState('');
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-  const [submitTime, setSubmitTime] = useState('');
-  const [error, setError] = useState('');
+const App = () => {
+  const [auth, setAuth] = useState(false);
 
-  const handleSubmit = async () => {
-    const payload = {
-      language: 'cpp',
-      code,
-      input
-    };
-
-    try {
-      const { data } = await axios.post('http://localhost:8080/run', payload);
-      console.log(data);
-      if (data.output) {
-        setOutput(data.output);
-        setError('');
-      } else if (data.error) {
-        setError(data.error);
-        setOutput('');
-      }
-      setSubmitTime(new Date().toLocaleString());
-    } catch (error) {
-      console.log(1);
-      console.log(error.response);
-    }
+  const handleAuthChange = (value) => {
+    setAuth(value);
+    window.location.reload();
   };
 
   return (
-    <div className="container">
-      <h1 className="title">Online Code Compiler</h1>
-      <div className="code-output">
-        <div className="code-container">
-          <textarea
-            rows="10"
-            cols="75"
-            className="textareacode"
-            value={code}
-            onChange={(e) => {
-              setCode(e.target.value);
-            }}
-            placeholder="Enter your code here"
-          ></textarea>
-          <textarea
-            rows="4"
-            cols="75"
-            className="textarea"
-            value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-            }}
-            placeholder="Enter input here"
-          ></textarea>
-          <button className="submit-button" onClick={handleSubmit}>
-            Submit
-          </button>
-          {submitTime && (
-            <p className="submit-time">Submitted at: {submitTime}</p>
-          )}
-        </div>
-        {output && (
-          <div className="output-container">
-            <h2>Output:</h2>
-            <div className="outputbox">
-              <p>{output}</p>
-            </div>
-          </div>
-        )}
-        {error && (
-          <div className="output-container">
-            <h2>Error:</h2>
-            <div className="outputbox error">
-              <p>{error}</p>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+    <>
+      <BrowserRouter>
+        <NavBar auth={auth} handleAuthChange={handleAuthChange} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/problems" element={<Problems />} />
+          <Route path="/problems/:pid/" element={<ProblemsPage />} />
+          <Route path="/submissions/:pid/" element={<Submissions />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/login"
+            element={<Login handleAuthChange={handleAuthChange} />}
+          />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
-}
+};
 
 export default App;

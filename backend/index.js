@@ -1,36 +1,34 @@
-const express = require('express');
-const cors = require('cors');
+const dotenv = require("dotenv");
+const express = require("express");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
+
 const app = express();
-const {generateFile} = require('./generateFile');
-const {executeCpp} = require('./executeCpp');
 
-//Middlewares
-app.use(express.urlencoded({extended:true}));
+dotenv.config({ path: "./config.env" });
+
+require("./db/connect");
+
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://ec2-13-127-199-105.ap-south-1.compute.amazonaws.com:3000",
+    ],
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
-//GET
-app.get("/", (req, res)=>{
-    // res.send("<h1>Doker is running!</h1>");
-    res.json({online:'compiler'});
-});
+app.use(require("./router/auth"));
 
-//POST
-app.post("/run", async(req,res) => {
-    const {language = 'cpp', code, input} = req.body;
-    if(code === undefined){
-        return res.status(404).json({success : false, error:"Code is Missing!"});
-    }
-    try{
-        const filePath = await generateFile(language, code);
-        const output = await executeCpp(filePath);
-        res.json({filePath, output});
-    } catch (error){
-        res.status(500).json({error: error});
-    }
-})
+const PORT = process.env.PORT || 5000;
 
-app.listen(8080, ()=>{
-    console.log("Server is running on port 8080!");
+app.listen(PORT, ()=>{
+    console.log(`Server is running on port ${PORT}!`);
 })
 
